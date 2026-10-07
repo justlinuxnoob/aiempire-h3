@@ -24,7 +24,7 @@ viral video ──▶ 🧠 Gemma 4: breakdown ──▶ 🧠 Gemma 4: H3 prompt 
 ## RunPod template settings
 | Setting | Value |
 |---|---|
-| Container image | `aiempire/aiempire-h3:latest` |
+| Container image | `ghcr.io/justlinuxnoob/aiempire-h3:latest` |
 | Container disk | 30 GB |
 | Volume | **100 GB** network volume at `/workspace` (models download once) |
 | HTTP ports | `8188` (ComfyUI), `8888` (JupyterLab) |
@@ -59,6 +59,6 @@ Third-party code: ComfyUI (GPL-3.0), ComfyUI-VideoHelperSuite (GPL-3.0). Source:
 
 ## Updating
 - Change a system prompt: edit `prompts/*.txt`, run `python3 tools/build_workflows.py`, commit.
-- Change the image: edit `docker/`, push to `main` → GitHub Actions builds and pushes to Docker Hub.
+- Change the image: edit `docker/`, push to `main` → GitHub Actions builds and pushes to ghcr.io.
 
 Join: https://www.skool.com/aiempire
