@@ -1,0 +1,7 @@
+aiempire:
+  base_path: /workspace/models/
+  diffusion_models: diffusion_models/
+  loras: loras/
+  text_encoders: text_encoders/
+  clip: text_encoders/
+  vae: vae/

@@ -1,0 +1,646 @@
+{
+ "1": {
+  "class_type": "PrimitiveBoolean",
+  "inputs": {
+   "value": true
+  },
+  "_meta": {
+   "title": "🟢 Use a START image?"
+  }
+ },
+ "2": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "aiempire_blank.png"
+  },
+  "_meta": {
+   "title": "📸 START image (frame 1)"
+  }
+ },
+ "3": {
+  "class_type": "PrimitiveBoolean",
+  "inputs": {
+   "value": false
+  },
+  "_meta": {
+   "title": "🔴 Use an END image?"
+  }
+ },
+ "4": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "aiempire_blank.png"
+  },
+  "_meta": {
+   "title": "📸 END image (last frame)"
+  }
+ },
+ "5": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1",
+    0
+   ],
+   "on_true": [
+    "2",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "start on/off"
+  }
+ },
+ "6": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "3",
+    0
+   ],
+   "on_true": [
+    "4",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "end on/off"
+  }
+ },
+ "7": {
+  "class_type": "StringFormat",
+  "inputs": {
+   "f_string": "start image: {a}\nend image: {b}",
+   "values.a": [
+    "10",
+    0
+   ],
+   "values.b": [
+    "13",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "frames list"
+  }
+ },
+ "8": {
+  "class_type": "PrimitiveString",
+  "inputs": {
+   "value": "yes"
+  },
+  "_meta": {
+   "title": "yes"
+  }
+ },
+ "9": {
+  "class_type": "PrimitiveString",
+  "inputs": {
+   "value": "no"
+  },
+  "_meta": {
+   "title": "no"
+  }
+ },
+ "10": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1",
+    0
+   ],
+   "on_true": [
+    "8",
+    0
+   ],
+   "on_false": [
+    "9",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "yes/no"
+  }
+ },
+ "11": {
+  "class_type": "PrimitiveString",
+  "inputs": {
+   "value": "yes"
+  },
+  "_meta": {
+   "title": "yes"
+  }
+ },
+ "12": {
+  "class_type": "PrimitiveString",
+  "inputs": {
+   "value": "no"
+  },
+  "_meta": {
+   "title": "no"
+  }
+ },
+ "13": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "3",
+    0
+   ],
+   "on_true": [
+    "11",
+    0
+   ],
+   "on_false": [
+    "12",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "yes/no"
+  }
+ },
+ "14": {
+  "class_type": "VHS_LoadVideo",
+  "inputs": {
+   "video": "viral.mp4",
+   "force_rate": 24,
+   "custom_width": 0,
+   "custom_height": 0,
+   "frame_load_cap": 360,
+   "skip_first_frames": 0,
+   "select_every_nth": 1,
+   "format": "None"
+  },
+  "_meta": {
+   "title": "🎬 Viral video (5-15 s)"
+  }
+ },
+ "15": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": ""
+  },
+  "_meta": {
+   "title": "✏️ CHANGES (optional: new lines, outfit, place...)"
+  }
+ },
+ "16": {
+  "class_type": "PrimitiveFloat",
+  "inputs": {
+   "value": 6.0
+  },
+  "_meta": {
+   "title": "⏱ Length (seconds)"
+  }
+ },
+ "17": {
+  "class_type": "ResolutionSelector",
+  "inputs": {
+   "aspect_ratio": "9:16 (Portrait Widescreen)",
+   "megapixels": 0.6,
+   "multiple": 32
+  },
+  "_meta": {
+   "title": "📐 Shape & quality (0.6 fast · 1.0 sharp)"
+  }
+ },
+ "18": {
+  "class_type": "ComfyMathExpression",
+  "inputs": {
+   "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17",
+   "values.a": [
+    "16",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "seconds → frames"
+  }
+ },
+ "19": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "gemma4_12b_int8_convrot.safetensors",
+   "type": "stable_diffusion",
+   "device": "default"
+  },
+  "_meta": {
+   "title": "Gemma 4 12B (local, no API key)"
+  }
+ },
+ "20": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "You are the AI Empire Video Analyst. You receive a short vertical social-media clip (frames with timestamps plus its soundtrack). Your job is to write a factual breakdown that another writer will use to remake the clip with a different person. Report only what can be seen or heard. Never guess at intentions, never praise the video, never add commentary.\n\nStart your answer directly with the first heading below. Use exactly these headings, in this order, and nothing else.\n\n## FORMAT\nOne line each:\n- Format type: pick the closest (POV skit, talking to camera, reaction, get-ready-with-me, outfit check, dance or trend, lip-sync, vlog moment, tutorial, prank, photo-style pose clip, other).\n- Hook: what happens in the first second that makes a viewer stop scrolling.\n- Edit: \"one continuous take\" or \"N shots\" with the time of every cut.\n- Length: total seconds.\n- Aspect: vertical 9:16, square, or horizontal.\n\n## CAMERA\nHow the footage was filmed, in physical terms: who holds the camera (the subject in selfie mode, an off-screen person, a tripod or a surface), front or back camera, distance to the subject, height and angle, how the frame moves (drift, shake, walking, pans, zooms), focus behaviour, exposure changes, and any lens look such as wide-angle distortion. Describe the light as sources: where each light comes from, its colour and how hard or soft it is.\n\n## SETTING\nThe location, the main objects and surfaces, colours and materials, what is visible through windows or doors, and how the place changes during the clip.\n\n## ON-SCREEN TEXT\nEvery caption, sticker or text overlay, copied exactly, with its position and the times it appears and disappears. Write \"None\" if there is none.\n\n## PEOPLE\nOne entry per person, labelled P1, P2 and so on, in the order they first appear or are heard. P1 is always the main on-camera person.\nFor each person:\n- Role: on camera, partly visible (for example only hands), or off-screen voice.\n- Outfit and accessories: garment types, colours, fit, materials, shoes, jewellery, nails, and any props they hold.\n- Build and posture in general words only (for example \"slim\", \"tall\", \"sits cross-legged\").\n- Voice, if they speak: apparent gender and age range, pitch, pace, accent, energy.\nDo NOT describe face shape, eye colour, skin tone, hair colour, hairstyle or ethnicity. The person will be replaced, so those details must stay out.\n\n## TIMELINE\nSplit the clip into blocks of about one second, written as \"00:00-00:01\". Every block lists, on separate lines:\n- Action: precise body movement, gestures, where they look, facial expression changes, interaction with objects or other people.\n- Camera: any change in framing or movement in this block.\n- Speech: who speaks, written as P1/P2, followed by the exact words in quotation marks in the original language. Leave this line out if nobody speaks.\n- Sound: notable non-speech sounds (door, footsteps, laugh, gasp, music starting or stopping). Leave this line out if nothing notable happens.\n\n## SOUND\n- Background music: describe instruments, tempo and whether it is a known trending sound if obvious from context, or write \"None\".\n- Ambience: the constant background sound of the place.\n\n## TRANSCRIPT\nAll spoken words in order, one line per line of dialogue, as: P1: \"...\" Keep the original language, filler words and stutters. Write \"No speech\" if nobody talks."
+  },
+  "_meta": {
+   "title": "system prompt · Video Analyst"
+  }
+ },
+ "21": {
+  "class_type": "TextGenerate",
+  "inputs": {
+   "prompt": "Break down this clip using your format.",
+   "max_length": 3072,
+   "sampling_mode": "on",
+   "sampling_mode.temperature": 0.3,
+   "sampling_mode.top_k": 64,
+   "sampling_mode.top_p": 0.95,
+   "sampling_mode.min_p": 0.05,
+   "sampling_mode.repetition_penalty": 1.05,
+   "sampling_mode.seed": 7,
+   "sampling_mode.presence_penalty": 0.0,
+   "thinking": false,
+   "use_default_template": true,
+   "mtp": "auto",
+   "clip": [
+    "19",
+    0
+   ],
+   "system_prompt": [
+    "20",
+    0
+   ],
+   "video": [
+    "14",
+    0
+   ],
+   "audio": [
+    "14",
+    2
+   ]
+  },
+  "_meta": {
+   "title": "1 · watch the video"
+  }
+ },
+ "22": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "You are the AI Empire Prompt Builder for MiniMax H3 keyframe mode. The user supplies a start image, an end image, or both, showing their own AI character, plus a breakdown of a clip to imitate. You write one finished H3 prompt that animates from the given frame(s). Realism is the priority: it must look like genuine phone footage posted by a real creator.\n\nYou receive:\n- FRAMES: two lines, \"start image: yes/no\" and \"end image: yes/no\". Both yes = \"start and end\"; only start = \"start\"; only end = \"end\". The start image is <Picture 1>. If both exist, the end image is <Picture 2>; if only an end image exists, it is <Picture 1>. If both say no, write a text-only prompt without the first line.\n- ANALYSIS: breakdown of the original clip.\n- CHANGES: optional user edits; they always win over ANALYSIS.\n- DURATION: target length in seconds, written with two decimals in the first line (for example 5.17).\n\nOUTPUT\nReply with the finished prompt only: no introduction, no notes, no markdown. English throughout, except spoken words and visible text, which keep their original language.\n\nLINE 1, exactly one of these, then one empty line:\n- start: For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n- start and end: How the reference pictures align with the target video — Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; Picture 2 (from Shot 1) aligns with the DURATION-second mark of the target video.\n- end: How the reference pictures align with the target video — <Picture 1> (from [Shot 1]) aligns with the DURATION-second mark of the target video.\n(Replace DURATION with the number.)\n\nThen three sections, each name followed by a colon, in this order:\nintegrated_multimodal_description:\noverall_soundscape:\nnon_diegetic_music:\n\nintegrated_multimodal_description\n- Begin with \"[Shot 1]\", the look (live-action vertical 9:16 smartphone video) and the opening composition taken from the start image. Use one continuous shot so the model can travel between the frames.\n- The person, her looks and her outfit are whatever the image shows. Do not describe her face or hair in words; describe pose, framing, expression and position.\n- start: anchor on the image, then the first movement, the development, and the end state.\n- start and end: describe the start state, the visible step-by-step changes, and finish with her settling into the exact pose, spacing and framing of <Picture 2>.\n- end: invent a natural earlier moment, the path toward the image, and land exactly on it.\n- Borrow actions, timing, camera behaviour, on-screen text and dialogue from ANALYSIS, adapted to fit DURATION and the frames.\n- Speaker IDs (S1), (S2) only for people who make vocal sounds, reused every time. Describe each voice once (age range, pitch, pace, accent, energy). Dialogue inside <d>[Language] \"exact words\"</d>, never reworded. If she does not speak, give her no ID and state that her lips stay closed with no mouth or jaw movement for the whole video.\n- Physical phone realism: hand drift, small re-framing, exposure and focus adjusting, natural skin texture, real fabric creases. No style labels like \"amateur\", \"cinematic\", \"aesthetic\" or \"vibe\". Light as physical sources with a direction, never a colour flooding the frame. State what happens rather than what does not.\n- 250 to 450 words.\n\noverall_soundscape and non_diegetic_music\n- Same rules as reference mode: concrete location sounds, no dialogue repeated, start with \"Dialogue: none. No speech, no voiceover, no narration, no singing.\" when nobody speaks, and N/A for music when there is none.\n\nSAFETY\nEvery character is an adult. No nudity or sexual acts. No real people or public figures."
+  },
+  "_meta": {
+   "title": "system prompt · H3 Prompt Builder"
+  }
+ },
+ "23": {
+  "class_type": "StringFormat",
+  "inputs": {
+   "f_string": "FRAMES:\n{a}\n\nANALYSIS:\n{b}\n\nCHANGES:\n{c}\n\nDURATION: {d:.2f}",
+   "values.a": [
+    "7",
+    0
+   ],
+   "values.b": [
+    "21",
+    0
+   ],
+   "values.c": [
+    "15",
+    0
+   ],
+   "values.d": [
+    "16",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "brief for the builder"
+  }
+ },
+ "24": {
+  "class_type": "TextGenerate",
+  "inputs": {
+   "prompt": [
+    "23",
+    0
+   ],
+   "max_length": 3072,
+   "sampling_mode": "on",
+   "sampling_mode.temperature": 0.5,
+   "sampling_mode.top_k": 64,
+   "sampling_mode.top_p": 0.95,
+   "sampling_mode.min_p": 0.05,
+   "sampling_mode.repetition_penalty": 1.05,
+   "sampling_mode.seed": 7,
+   "sampling_mode.presence_penalty": 0.0,
+   "thinking": false,
+   "use_default_template": true,
+   "mtp": "auto",
+   "clip": [
+    "19",
+    0
+   ],
+   "system_prompt": [
+    "22",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "2 · write the H3 prompt"
+  }
+ },
+ "25": {
+  "class_type": "StringFormat",
+  "inputs": {
+   "f_string": "r34l1sm, {a}",
+   "values.a": [
+    "24",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "add realism trigger"
+  }
+ },
+ "26": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "21",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "breakdown of the viral video"
+  }
+ },
+ "27": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "25",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "final H3 prompt"
+  }
+ },
+ "28": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "UNETLoader"
+  }
+ },
+ "29": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "lora_name": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+   "strength_model": 1.0,
+   "model": [
+    "28",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "⚡ Turbo 8-step LoRA"
+  }
+ },
+ "30": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "lora_name": "h3-realism-people-t2v-i2v-r2v.safetensors",
+   "strength_model": 0.7,
+   "model": [
+    "29",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "🧍 Realism people LoRA (0.6-1.0)"
+  }
+ },
+ "31": {
+  "class_type": "MiniMaxH3SigmaShift",
+  "inputs": {
+   "shift_video": 10.0,
+   "shift_audio": 3.0,
+   "model": [
+    "30",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "MiniMaxH3SigmaShift"
+  }
+ },
+ "32": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+   "type": "minimax",
+   "device": "default"
+  },
+  "_meta": {
+   "title": "CLIPLoader"
+  }
+ },
+ "33": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+  },
+  "_meta": {
+   "title": "video VAE"
+  }
+ },
+ "34": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+  },
+  "_meta": {
+   "title": "audio VAE"
+  }
+ },
+ "35": {
+  "class_type": "MiniMaxH3ImageToVideo",
+  "inputs": {
+   "prompt": [
+    "25",
+    0
+   ],
+   "width": [
+    "17",
+    0
+   ],
+   "height": [
+    "17",
+    1
+   ],
+   "length": [
+    "18",
+    1
+   ],
+   "clip": [
+    "32",
+    0
+   ],
+   "vae": [
+    "33",
+    0
+   ],
+   "first_frame": [
+    "5",
+    0
+   ],
+   "last_frame": [
+    "6",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "MiniMaxH3ImageToVideo"
+  }
+ },
+ "36": {
+  "class_type": "BasicGuider",
+  "inputs": {
+   "model": [
+    "31",
+    0
+   ],
+   "conditioning": [
+    "35",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "BasicGuider"
+  }
+ },
+ "37": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "res_multistep"
+  },
+  "_meta": {
+   "title": "KSamplerSelect"
+  }
+ },
+ "38": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 8,
+   "denoise": 1.0,
+   "model": [
+    "31",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "BasicScheduler"
+  }
+ },
+ "39": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 2026
+  },
+  "_meta": {
+   "title": "🎲 Seed"
+  }
+ },
+ "40": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "39",
+    0
+   ],
+   "guider": [
+    "36",
+    0
+   ],
+   "sampler": [
+    "37",
+    0
+   ],
+   "sigmas": [
+    "38",
+    0
+   ],
+   "latent_image": [
+    "35",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "SamplerCustomAdvanced"
+  }
+ },
+ "41": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "40",
+    0
+   ],
+   "vae": [
+    "33",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "VAEDecode"
+  }
+ },
+ "42": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "40",
+    0
+   ],
+   "vae": [
+    "34",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "VAEDecodeAudio"
+  }
+ },
+ "43": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24.0,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "41",
+    0
+   ],
+   "audio": [
+    "42",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "CreateVideo"
+  }
+ },
+ "44": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "AIEmpire/H3_frames",
+   "format": "auto",
+   "format.codec": "auto",
+   "video": [
+    "43",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "💾 Saved to output/AIEmpire"
+  }
+ }
+}
